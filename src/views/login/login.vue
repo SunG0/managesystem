@@ -40,19 +40,25 @@
           <el-button class="login" @click="loginClick" type="primary">登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button class="register" type="primary">注册</el-button>
+          <el-button class="register" type="primary" @click="register">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="right">
       <img src="@/assets/img/login_banner_ele.png" alt />
     </div>
+    <register ref="register"></register>
   </div>
+  
 </template>
 
 <script>
+import register from './register'
 export default {
   name: "login",
+  components:{
+    register
+  },
   data() {
     return {
       form: {
@@ -90,6 +96,9 @@ export default {
 
         }
       })
+    },
+    register(){
+      this.$refs.register.isShow = true
     }
   },
 };
