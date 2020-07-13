@@ -7,11 +7,11 @@
         <span class="titleLine"></span>
         <span class="titleName2">用户登录</span>
       </div>
-      <el-form :model="form">
-        <el-form-item>
+      <el-form :model="form" ref="form" :rules="rules">
+        <el-form-item prop="phone">
           <el-input v-model="form.phone" placeholder="请输入手机号" prefix-icon="el-icon-user"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
             v-model="form.password"
             placeholder="请输入密码"
@@ -19,7 +19,7 @@
             show-password
           ></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="code">
           <el-row>
             <el-col :span="16">
               <el-input v-model="form.code" placeholder="请输入验证码" prefix-icon="el-icon-key"></el-input>
@@ -29,15 +29,15 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="checked">
+        <el-form-item prop="checked">
+          <el-checkbox v-model="form.checked">
             我已阅读并同意
             <el-link type="primary">用户协议</el-link>和
             <el-link type="primary">隐私条款</el-link>
           </el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-button class="login" type="primary">登录</el-button>
+          <el-button class="login" @click="loginClick" type="primary">登录</el-button>
         </el-form-item>
         <el-form-item>
           <el-button class="register" type="primary">注册</el-button>
@@ -60,9 +60,38 @@ export default {
         password: "",
         code: "",
         checked: []
+      },
+      rules: {
+        phone: [
+          { required: true, message: "手机号不能为空", trigger: "change" },
+          { min: 11, max: 11, message: "请为11位手机号", trigger: "change" }
+        ],
+        password: [
+          { required: true, message: "密码不能为空", trigger: "change" },
+          { min: 6, max: 12, message: "密码为6-12个字符", trigger: "change" }
+        ],
+        code:[
+          { required: true, message: "验证码不能为空", trigger: "change" },
+          { min: 4, max: 4, message: "请输入4位验证码", trigger: "change" }
+        ],checked:[
+          { required: true, message: "请确认用户协议及隐私条款并勾选", trigger: "change" },
+
+        ]
       }
     };
-  }
+  },
+  methods: {
+    loginClick(){
+      this.$refs.form.validate(res=>{
+        if(res){
+          this.$message.success('输入格式正确')
+        }else{
+          this.$message.error('输入格式错误')
+
+        }
+      })
+    }
+  },
 };
 </script>
 
