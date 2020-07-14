@@ -60,7 +60,7 @@
 <script>
 import register from "./register";
 import {toLogin} from '@/api/login.js';
-import {saveToken} from '@/untils/local.js'
+import {saveToken,getToken} from '@/untils/local.js'
 export default {
   name: "login",
   components: {
@@ -134,6 +134,10 @@ export default {
     },
     register() {
       this.$refs.register.isShow = true;
+    }
+  },created(){
+    if(getToken()){
+      this.$router.push('/layout')
     }
   }
 };
