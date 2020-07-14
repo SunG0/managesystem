@@ -25,7 +25,13 @@
               <el-input v-model="form.code" placeholder="请输入验证码" prefix-icon="el-icon-key"></el-input>
             </el-col>
             <el-col :span="8">
-              <img src="@/assets/img/key.jpg" alt />
+              <img
+              class="codeImage"
+                v-if="bol"
+                @click="changeImg"
+                :src = "imgUrl"
+                alt
+              />
             </el-col>
           </el-row>
         </el-form-item>
@@ -49,18 +55,21 @@
     </div>
     <register ref="register"></register>
   </div>
-  
 </template>
 
 <script>
-import register from './register'
+import register from "./register";
+import {toLogin} from '@/api/login.js';
+import {saveToken} from '@/untils/local.js'
 export default {
   name: "login",
-  components:{
+  components: {
     register
   },
   data() {
     return {
+      bol: true,
+      imgUrl:process.env.VUE_APP_URL + "/captcha?type=login",
       form: {
         phone: "",
         password: "",
@@ -70,37 +79,63 @@ export default {
       rules: {
         phone: [
           { required: true, message: "手机号不能为空", trigger: "change" },
-          { min: 11, max: 11, message: "请为11位手机号", trigger: "change" }
+          { min: 11, max: 11, message: "请为11位手机号", trigger: "change" },
+          {
+            validator: (rule, value, callback) => {
+              let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+              if (reg.test(value)) {
+                callback();
+              } else {
+                callback(new Error("手机号格式输入错误"));
+              }
+            },
+            trigger: "change"
+          }
         ],
         password: [
           { required: true, message: "密码不能为空", trigger: "change" },
           { min: 6, max: 12, message: "密码为6-12个字符", trigger: "change" }
         ],
-        code:[
+        code: [
           { required: true, message: "验证码不能为空", trigger: "change" },
           { min: 4, max: 4, message: "请输入4位验证码", trigger: "change" }
-        ],checked:[
-          { required: true, message: "请确认用户协议及隐私条款并勾选", trigger: "change" },
-
+        ],
+        checked: [
+          {
+            required: true,
+            message: "请确认用户协议及隐私条款并勾选",
+            trigger: "change"
+          }
         ]
       }
     };
   },
   methods: {
-    loginClick(){
-      this.$refs.form.validate(res=>{
-        if(res){
-          this.$message.success('输入格式正确')
-        }else{
-          this.$message.error('输入格式错误')
-
+    loginClick() {
+      this.$refs.form.validate(res => {
+        if (res) {
+          // this.$message.success("输入格式正确");
+          toLogin(this.form).then(()=>{
+            // console.log('登录',res);
+            saveToken()
+            //跳转到layout页面
+            this.$router.push('/layout')
+          })
+        } else {
+          this.$message.error("输入格式错误");
         }
-      })
+      });
     },
-    register(){
-      this.$refs.register.isShow = true
+    changeImg() {
+      this.bol = false;
+      this.$nextTick(() => {
+        this.bol = true;
+      });
+    },
+    register() {
+      this.$refs.register.isShow = true;
     }
-  },
+  }
 };
 </script>
 
@@ -117,6 +152,10 @@ export default {
     height: 550px;
     background: #f5f5f5;
     padding: 44px;
+    .codeImage{
+      width: 100%;
+      height: 42px;
+    }
     .title {
       display: flex;
       align-items: center;
