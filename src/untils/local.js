@@ -9,6 +9,6 @@ function getToken(){
 }
 //移出token
 function removeToken(){
-    window.localStorage.removeItem()
+    window.localStorage.removeItem('token')
 }
 export {saveToken,getToken,removeToken}

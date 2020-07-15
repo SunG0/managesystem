@@ -46,7 +46,7 @@
               <el-input v-model="form.rcode"></el-input>
             </el-col>
             <el-col :span="9" :offset="1">
-              <el-button>获取手机验证码</el-button>
+              <el-button :disabled="totleTime !=5 " @click="getCode">获取手机验证码 <span v-if="totleTime!=5">（{{totleTime+1}}）秒</span></el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -61,15 +61,17 @@
 </template>
 
 <script>
+import {registerUser,getPhoneCode} from '@/api/login.js'
 export default {
   name: "register",
   data() {
     return {
       isShow: false,
+      totleTime:5,
       url: process.env.VUE_APP_URL + "/uploads", //头像上传请求
       imageUrl: "", //图片预览
       codeImg:
-        process.env.VUE_APP_URL + "/captcha?type=sendsms&sdfg=" + Date.now(), //图片验证码地址
+        process.env.VUE_APP_URL + "/captcha?type=sendsms", //图片验证码地址
       bol: true, //图片验证码静默刷新
       form: {
         avatar: "", //	是	string	头像地址
@@ -164,10 +166,38 @@ export default {
           this.bol = true;
         });
     },
+    getCode(){
+      this.totleTime--
+      let timeID= setInterval(() => {
+        this.totleTime--
+        if(this.totleTime<-1){
+          this.totleTime=5
+          clearInterval(timeID)
+        }
+      }, 1000);
+
+
+      let num =0
+      this.$refs.form.validateField(['phone','code'],err=>{
+        if(err == ''){
+          num++
+        }
+      })
+      if(num==2){
+        getPhoneCode({code:this.form.code,phone:this.form.phone}).then(res=>{
+          this.$message.success(res.data.captcha+'')
+          console.log(res);
+        })
+      }
+    },
     submit() {
       this.$refs.form.validate(res => {
         if (res) {
-          this.$message.success("信息格式输入正确");
+          // this.$message.success("信息格式输入正确");
+          registerUser(this.form).then(()=>{
+              this.$message.success("注册成功,请登录")
+              this.isShow = false;
+          })
         } else {
           this.$message.error("信息格式输入错误");
         }

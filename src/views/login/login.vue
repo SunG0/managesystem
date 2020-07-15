@@ -115,9 +115,9 @@ export default {
       this.$refs.form.validate(res => {
         if (res) {
           // this.$message.success("输入格式正确");
-          toLogin(this.form).then(()=>{
+          toLogin(this.form).then((res)=>{
             // console.log('登录',res);
-            saveToken()
+            saveToken(res.data.token)
             //跳转到layout页面
             this.$router.push('/layout')
           })

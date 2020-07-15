@@ -16,6 +16,14 @@ function registerUser(data){
     })
 }
 
+function getPhoneCode(data){
+     return _axios({
+         url:'/sendsms',
+         method:'post',
+         data
+     })
+}
+
 function toLogin(data){
     return _axios({
         url:'/login',
@@ -25,4 +33,4 @@ function toLogin(data){
 }
 
 
-export {getCode,registerUser,toLogin}
+export {getCode,registerUser,getPhoneCode,toLogin}

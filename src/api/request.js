@@ -1,6 +1,9 @@
 import axios from 'axios'
+import {
+  Message
+} from 'element-ui'
 import { getToken ,removeToken} from '@/untils/local.js'
-import router from '@/router/router.js'
+import {router} from '@/router/router.js'
 let _axios = axios.create({
     baseURL:process.env.VUE_APP_URL,
     withCredentials : true
@@ -31,6 +34,7 @@ _axios.interceptors.response.use(function (response) {
         return Promise.reject('error');
     }
     else{
+      Message.error(response.data.message)
         //表示就扣请求失败，此时要阻止.then 的执行
         return Promise.reject('error');
     }
