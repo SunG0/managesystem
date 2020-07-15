@@ -2,7 +2,7 @@
   <el-container class="layout">
     <el-header class="header">
       <ul>
-        <li class="el-icon-s-fold f20"></li>
+        <li @click="isCollapse = !isCollapse" class="el-icon-s-fold f20"></li>
         <li>
           <img src="@/assets/img/layout-logo.png" alt />
         </li>
@@ -18,36 +18,68 @@
       </ul>
     </el-header>
     <el-container class="content">
-      <el-aside width="200px" class="aside">Aside</el-aside>
-      <el-main>Main</el-main>
+      <el-aside width="auto"  class="aside">
+        <el-menu
+          :default-active="$route.path"
+          router
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+        >
+          <el-menu-item index="/layout/dataList">
+            <i class="el-icon-s-data"></i>
+            <span slot="title">数据概览</span>
+          </el-menu-item>
+          <el-menu-item index="/layout/userList">
+            <i class="el-icon-user"></i>
+            <span slot="title">用户列表</span>
+          </el-menu-item>
+          <el-menu-item index="/layout/textList">
+            <i class="el-icon-document"></i>
+            <span slot="title">题库列表</span>
+          </el-menu-item>
+          <el-menu-item index="/layout/companyList">
+            <i class="el-icon-office-building"></i>
+            <span slot="title">企业列表</span>
+          </el-menu-item>
+          <el-menu-item index="/layout/subjectList">
+            <i class="el-icon-tickets"></i>
+            <span slot="title">学科列表</span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main class="main">
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
-import { getInfo, logout} from '@/api/layout.js'
-import {removeToken} from '@/untils/local.js'
+import { getInfo, logout } from "@/api/layout.js";
+import { removeToken } from "@/untils/local.js";
 export default {
   data() {
     return {
-      userIcon: "",
-      info:''
+      isCollapse: true,
+      info: ""
     };
   },
   methods: {
-    exit(){
-      logout().then(()=>{
-        removeToken()
-        this.$router.push('/login')
-      })
+    //退出
+    exit() {
+      logout().then(() => {
+        removeToken();
+        this.$router.push("/login");
+      });
     }
   },
   created() {
-    getInfo().then(res=>{
-      res.data.avatar = process.env.VUE_APP_URL +'/'+ res.data.avatar
-      this.info = res.data
-    })
-  },
+    //获取用户信息
+    getInfo().then(res => {
+      res.data.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
+      this.info = res.data;
+    });
+  }
 };
 </script>
 
@@ -56,7 +88,6 @@ export default {
 .layout {
   height: 100%;
   .header {
-    background-color: #ccc;
     padding-top: 10px;
     ul {
       display: flex;
@@ -64,7 +95,7 @@ export default {
       .nouse {
         flex: 1;
       }
-      .f20{
+      .f20 {
         font-size: 20px;
         margin-right: 15px;
       }
@@ -101,7 +132,12 @@ export default {
   .content {
     height: 100%;
     .aside {
-      background-color: rgb(145, 207, 187);
+      .el-menu-vertical-demo:not(.el-menu--collapse) {
+        width: 200px;
+      }
+    }
+    .main{
+      background-color: #E8E9EC;
     }
   }
 }
