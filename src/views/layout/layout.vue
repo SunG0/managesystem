@@ -9,16 +9,16 @@
         <li class="t1">面试宝</li>
         <li class="nouse"></li>
         <li>
-          <img class="userIcon" :src="info.avatar" alt />
+          <img v-if="info != ''" class="userIcon" :src="baseUrl+'/'+ $store.state.userInfo.avatar" alt />
         </li>
-        <li class="t2">{{info.username}}</li>
+        <li class="t2">{{$store.state.userInfo.username}}</li>
         <li>
           <el-button class="btn" @click="exit" type="primary">退出</el-button>
         </li>
       </ul>
     </el-header>
     <el-container class="content">
-      <el-aside width="auto"  class="aside">
+      <el-aside width="auto" class="aside">
         <el-menu
           :default-active="$route.path"
           router
@@ -60,24 +60,30 @@ import { removeToken } from "@/untils/local.js";
 export default {
   data() {
     return {
-      isCollapse: true,
-      info: ""
+      isCollapse: false,
+      baseUrl:process.env.VUE_APP_URL
     };
   },
   methods: {
     //退出
     exit() {
-      logout().then(() => {
-        removeToken();
-        this.$router.push("/login");
+      this.$confirm("确认要退出登陆吗？", "提示", {
+        confirmButtonText: "确定走了",
+        cancelButtonText: "再逛逛",
+        type:'info'
+      }).then(() => {
+        logout().then(() => {
+          removeToken();
+          this.$router.push("/login");
+        });
       });
     }
   },
   created() {
     //获取用户信息
     getInfo().then(res => {
-      res.data.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
-      this.info = res.data;
+      // res.data.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
+      this.$store.state.userInfo = res.data;
     });
   }
 };
@@ -136,8 +142,8 @@ export default {
         width: 200px;
       }
     }
-    .main{
-      background-color: #E8E9EC;
+    .main {
+      background-color: #e8e9ec;
     }
   }
 }
